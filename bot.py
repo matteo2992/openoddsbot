@@ -61,21 +61,17 @@ def monitor_odds(match_name, chat_id, context):
             odds_x = odds_info['X']
             odds_2 = odds_info['2']
 
-            context.bot.send_message(
-                chat_id=chat_id, 
-                text=(
-                    f"Sono uscite le quote per {match_name}!
-"
-                    f"📚 Bookmaker: {bookmaker}
+      context.bot.send_message(
+    chat_id=chat_id, 
+    text=(
+        f"Sono uscite le quote per {match_name}!\n"
+        f"📚 Bookmaker: {bookmaker}\n\n"
+        f"➡️ 1 (Vittoria Casa): {odds_1}\n"
+        f"➡️ X (Pareggio): {odds_x}\n"
+        f"➡️ 2 (Vittoria Ospite): {odds_2}"
+    )
+)
 
-"
-                    f"➡️ 1 (Vittoria Casa): {odds_1}
-"
-                    f"➡️ X (Pareggio): {odds_x}
-"
-                    f"➡️ 2 (Vittoria Ospite): {odds_2}"
-                )
-            )
             already_alerted = True
             break  # Esce dal ciclo una volta avvisato
         
