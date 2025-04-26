@@ -1,4 +1,3 @@
-
 import logging
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
@@ -55,25 +54,25 @@ def monitor_odds(match_name, chat_id, context):
         
         odds_info = check_if_odds_available(match_name)
 
-       if odds_info and not already_alerted:
-    bookmaker = odds_info['bookmaker']
-    odds_1 = odds_info['1']
-    odds_x = odds_info['X']
-    odds_2 = odds_info['2']
+        if odds_info and not already_alerted:
+            bookmaker = odds_info['bookmaker']
+            odds_1 = odds_info['1']
+            odds_x = odds_info['X']
+            odds_2 = odds_info['2']
 
-    context.bot.send_message(
-        chat_id=chat_id, 
-        text=(
-            f"Sono uscite le quote per {match_name}!\n"
-            f"📚 Bookmaker: {bookmaker}\n\n"
-            f"➡️ 1 (Vittoria Casa): {odds_1}\n"
-            f"➡️ X (Pareggio): {odds_x}\n"
-            f"➡️ 2 (Vittoria Ospite): {odds_2}"
-        )
-    )
-    already_alerted = True
-    break  # Esce dal ciclo una volta avvisato
-
+            context.bot.send_message(
+                chat_id=chat_id, 
+                text=(
+                    f"Sono uscite le quote per {match_name}!\n"
+                    f"📚 Bookmaker: {bookmaker}\n\n"
+                    f"➡️ 1 (Vittoria Casa): {odds_1}\n"
+                    f"➡️ X (Pareggio): {odds_x}\n"
+                    f"➡️ 2 (Vittoria Ospite): {odds_2}"
+                )
+            )
+            already_alerted = True
+            break  # Esce dal ciclo una volta avvisato
+        
         time.sleep(60)  # Aspetta 60 secondi
 
 # 🔍 Funzione simulata per verificare se le quote sono disponibili
