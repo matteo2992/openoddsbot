@@ -3,13 +3,13 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 import time
 import threading
-import random
+import requests
 from flask import Flask
 from threading import Thread
 
 # Sostituisci con il tuo token
 TELEGRAM_TOKEN = '7730394803:AAEXhm2YIHDGPth_9zZQfyUsekZhsQj8xgk'
-SPORT_RADAR_API_KEY = 'iqRjDEItZJlerWQ0FaeVsmBWhNPngu06JvUUpbI0'
+API_FOOTBALL_KEY = 'a6d256bf79b4ec1d64194333abd22d7e'
 
 # Per salvare le partite da monitorare
 monitored_matches = {}
@@ -52,7 +52,7 @@ def monitor_odds(match_name, chat_id, context):
     while True:
         print(f"Controllo le quote per: {match_name}")
         
-        odds_info = check_if_odds_available(match_name)
+        odds_info = get_odds_from_api(match_name)
 
         if odds_info and not already_alerted:
             bookmaker = odds_info['bookmaker']
@@ -75,18 +75,33 @@ def monitor_odds(match_name, chat_id, context):
         
         time.sleep(60)  # Aspetta 60 secondi
 
-# 🔍 Funzione simulata per verificare se le quote sono disponibili
-def check_if_odds_available(match_name):
-    if random.choice([False, False, False, True]):  # Simulazione: a volte sono disponibili
-        bookmakers = ["Bet365", "Snai", "William Hill", "Unibet", "Goldbet"]
-        bookmaker = random.choice(bookmakers)
-        odds = {
-            'bookmaker': bookmaker,
-            '1': round(random.uniform(1.5, 3.0), 2),
-            'X': round(random.uniform(2.5, 4.5), 2),
-            '2': round(random.uniform(1.8, 3.2), 2),
+# Funzione per ottenere le quote tramite l'API di API-Football
+def get_odds_from_api(match_name):
+    url = f"https://api-football-v1.p.rapidapi.com/v3/odds"
+
+    headers = {
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+        'x-rapidapi-key': API_FOOTBALL_KEY
+    }
+
+    querystring = {
+        'league': '39',  # Puoi cambiare questa parte con il codice della lega che vuoi monitorare
+        'season': '2025',  # Anno della stagione
+        'homeTeam': match_name.split(" - ")[0],  # Casa
+        'awayTeam': match_name.split(" - ")[1]  # Ospite
+    }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    odds_info = response.json()
+
+    if 'response' in odds_info and odds_info['response']:
+        odds = odds_info['response'][0]['bookmakers'][0]['bets'][0]
+        return {
+            'bookmaker': odds_info['response'][0]['bookmakers'][0]['title'],
+            '1': odds['values'][0]['odd'],
+            'X': odds['values'][1]['odd'],
+            '2': odds['values'][2]['odd']
         }
-        return odds
     else:
         return None
 
